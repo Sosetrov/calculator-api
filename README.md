@@ -1,16 +1,24 @@
 # Calculator API
-Осетров Степан РИ-431003
+
+Осетров Степан, РИ-431003
+
 REST API калькулятор на Python и FastAPI.
 
-## Возможности
+## Версия 0.1.2
 
-API поддерживает:
+В версии `0.1.2` добавлено автоматическое версионирование приложения через GitHub Actions.
+
+* `MAJOR` и `MINOR` задаются вручную в `version.env`;
+* `PATCH` автоматически увеличивается на 1 при каждом `push`;
+* Docker-образ автоматически собирается и публикуется в GitHub Container Registry.
+
+## Возможности
 
 * сложение;
 * вычитание;
 * умножение;
 * деление;
-* проверку работоспособности приложения через `/health`;
+* проверка работоспособности через `/health`.
 
 ## Технологии
 
@@ -18,12 +26,16 @@ API поддерживает:
 * FastAPI
 * Uvicorn
 * Docker
-* Git
+* GitHub Actions
+* GitHub Container Registry
 
 ## Структура проекта
 
 ```text
 calculator-api/
+├── .github/
+│   └── workflows/
+│       └── docker-publish.yml
 ├── app/
 │   ├── __init__.py
 │   └── main.py
@@ -31,40 +43,31 @@ calculator-api/
 ├── .gitignore
 ├── Dockerfile
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+└── version.env
 ```
 
 ## API
 
 ### GET `/`
 
-Возвращает информацию о приложении.
-
-Пример запроса:
-
 ```bash
 curl http://127.0.0.1:8000/
 ```
 
-Пример ответа:
-
 ```json
 {
   "name": "API-Calc Osetrov",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "status": "running"
 }
 ```
 
 ### GET `/health`
 
-Проверяет работоспособность приложения.
-
 ```bash
 curl http://127.0.0.1:8000/health
 ```
-
-Ответ:
 
 ```json
 {
@@ -74,15 +77,11 @@ curl http://127.0.0.1:8000/health
 
 ### POST `/add`
 
-Сложение двух чисел.
-
 ```bash
 curl -X POST http://127.0.0.1:8000/add \
   -H "Content-Type: application/json" \
   -d '{"a": 40, "b": 3}'
 ```
-
-Ответ:
 
 ```json
 {
@@ -92,15 +91,11 @@ curl -X POST http://127.0.0.1:8000/add \
 
 ### POST `/subtract`
 
-Вычитание второго числа из первого.
-
 ```bash
 curl -X POST http://127.0.0.1:8000/subtract \
   -H "Content-Type: application/json" \
   -d '{"a": 54, "b": 5}'
 ```
-
-Ответ:
 
 ```json
 {
@@ -110,15 +105,11 @@ curl -X POST http://127.0.0.1:8000/subtract \
 
 ### POST `/multiply`
 
-Умножение двух чисел.
-
 ```bash
 curl -X POST http://127.0.0.1:8000/multiply \
   -H "Content-Type: application/json" \
   -d '{"a": 10, "b": 5}'
 ```
-
-Ответ:
 
 ```json
 {
@@ -128,15 +119,11 @@ curl -X POST http://127.0.0.1:8000/multiply \
 
 ### POST `/divide`
 
-Деление первого числа на второе.
-
 ```bash
 curl -X POST http://127.0.0.1:8000/divide \
   -H "Content-Type: application/json" \
   -d '{"a": 100, "b": 25}'
 ```
-
-Ответ:
 
 ```json
 {
@@ -144,7 +131,7 @@ curl -X POST http://127.0.0.1:8000/divide \
 }
 ```
 
-При попытке деления на ноль API возвращает HTTP 400:
+При делении на ноль API возвращает HTTP 400:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/divide \
@@ -152,169 +139,79 @@ curl -X POST http://127.0.0.1:8000/divide \
   -d '{"a": 12, "b": 0}'
 ```
 
-Ответ:
-
-```json
-{
-  "detail": "Division by zero is not allowed/Запрещено деление на 0"
-}
-```
-
-## Запуск без Docker
-
-### 1. Клонирование репозитория
-
-```bash
-git clone git@github.com:Sosetrov/calculator-api.git
-cd calculator-api
-```
-
-### 2. Создание виртуального окружения
-
-```bash
-python3 -m venv .venv
-```
-
-Активация:
-
-```bash
-source .venv/bin/activate
-```
-
-### 3. Установка зависимостей
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Запуск приложения
-
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-После запуска API доступно по адресу:
-
-```text
-http://127.0.0.1:8000
-```
-
-Для остановки приложения:
-
-```text
-Ctrl+C
-```
-
 ## Запуск в Docker
 
-### Сборка Docker-образа
+Сборка:
 
 ```bash
-docker build -t calculator-api:0.0.1 .
+docker build \
+  --build-arg APP_VERSION=0.1.0 \
+  -t calculator-api:0.1.0 .
 ```
 
-### Запуск контейнера
+Запуск:
 
 ```bash
 docker run -d \
   --name calculator-api \
   -p 8000:8000 \
-  calculator-api:0.0.1
+  calculator-api:0.1.0
 ```
 
-Проверить запущенные контейнеры:
-
-```bash
-docker ps
-```
-
-### Проверка API
+Проверка:
 
 ```bash
 curl http://127.0.0.1:8000/health
 ```
 
-### Просмотр логов
+Логи:
 
 ```bash
 docker logs calculator-api
 ```
 
-Для просмотра логов в реальном времени:
+## CI/CD и версионирование
 
-```bash
-docker logs -f calculator-api
+Текущая версия хранится в `version.env`:
+
+```env
+MAJOR=0
+MINOR=1
+PATCH=0
 ```
 
-### Остановка контейнера
-
-```bash
-docker stop calculator-api
-```
-
-### Удаление контейнера
-
-```bash
-docker rm calculator-api
-```
-
-### Удаление Docker-образа
-
-```bash
-docker rmi calculator-api:0.0.1
-```
-
-## Версионирование
-
-Текущая версия API:
+При обычном `push` GitHub Actions автоматически увеличивает `PATCH`:
 
 ```text
-0.0.1
+0.1.0 → 0.1.1 → 0.1.2 → ...
 ```
 
-Версия приложения указывается в `app/main.py`:
+При выпуске новой MINOR-версии изменяется:
 
-```python
-app = FastAPI(
-    title="Calculator API",
-    description="REST API калькулятор",
-    version="0.0.1"
-)
+```env
+MINOR=2
+PATCH=0
 ```
 
-Версия также используется при создании Docker-образа:
+После этого версия начинается с:
 
-```bash
-docker build -t calculator-api:0.0.1 .
+```text
+0.2.0 → 0.2.1 → 0.2.2 → ...
 ```
 
-## Проверка работоспособности
+MAJOR-версия изменяется аналогично.
 
-После запуска приложения можно выполнить:
+GitHub Actions автоматически:
 
-```bash
-curl http://127.0.0.1:8000/
-curl http://127.0.0.1:8000/health
-```
+1. определяет версию;
+2. собирает Docker-образ;
+3. публикует его в GitHub Container Registry;
+4. обновляет `version.env`, если `PATCH` был увеличен автоматически.
 
-И проверить арифметические операции:
+Образ:
 
-```bash
-curl -X POST http://127.0.0.1:8000/add \
-  -H "Content-Type: application/json" \
-  -d '{"a": 11, "b": 9}'
-
-curl -X POST http://127.0.0.1:8000/subtract \
-  -H "Content-Type: application/json" \
-  -d '{"a": 80, "b": 45}'
-
-curl -X POST http://127.0.0.1:8000/multiply \
-  -H "Content-Type: application/json" \
-  -d '{"a": 12, "b": 12}'
-
-curl -X POST http://127.0.0.1:8000/divide \
-  -H "Content-Type: application/json" \
-  -d '{"a": 130, "b": 2}'
+```text
+ghcr.io/sosetrov/calculator-api
 ```
 
 ## Лицензия
