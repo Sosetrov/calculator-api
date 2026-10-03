@@ -1,9 +1,38 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-APP_VERSION = os.getenv("APP_VERSION", "0.0.1")
+
+def get_app_version():
+    env_version = os.getenv("APP_VERSION")
+
+    if env_version:
+        return env_version
+
+    version_file = Path(__file__).resolve().parent.parent / "version.env"
+
+    version_data = {}
+
+    with open(version_file, "r", encoding="utf-8") as file:
+        for line in file:
+            line = line.strip()
+
+            if not line or line.startswith("#"):
+                continue
+
+            key, value = line.split("=", 1)
+            version_data[key.strip()] = value.strip()
+
+    return (
+        f"{version_data['MAJOR']}."
+        f"{version_data['MINOR']}."
+        f"{version_data['PATCH']}"
+    )
+
+
+APP_VERSION = get_app_version()
 
 app = FastAPI(
     title="API-Calculator by Osetrov Stepan",

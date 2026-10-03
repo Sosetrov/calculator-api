@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-ARG APP_VERSION=0.0.1
+ARG APP_VERSION
 ENV APP_VERSION=${APP_VERSION}
 
 COPY requirements.txt .
@@ -10,6 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+COPY version.env
 
 EXPOSE 8000
 
