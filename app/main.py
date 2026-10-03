@@ -1,10 +1,14 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+APP_VERSION = os.getenv("APP_VERSION", "0.0.1")
 
 app = FastAPI(
     title="API-Calculator by Osetrov Stepan",
     description="REST API калькулятор для задания по дисциплине Методы Оценки Безопасности Компьютерных Систем\nВыполнил Осетров Степан, РИ-431003\nПреподаватель: Крамаренко Павел Владимирович",
-    version="0.0.1"
+    version=APP_VERSION
 )
 
 
@@ -17,7 +21,7 @@ class Calculation(BaseModel):
 def root():
     return {
         "name": "API-Calc Osetrov",
-        "version": "0.0.1",
+        "version": APP_VERSION,
         "status": "running"
     }
 
