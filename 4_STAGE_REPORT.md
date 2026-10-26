@@ -16,11 +16,11 @@
 
 ### 2.1. Сводка находок
 
-| № | Файл | Строки | Правило | Критичность | Суть |
-|---|---|---|---|---|---|
-| 1 | `.github/workflows/docker-publish.yml` | 22, 49, 64, 79, 90, 97 | `github-actions-mutable-action-tag` | WARNING | Использование изменяемых тегов GitHub Actions |
-| 2 | `Dockerfile` | 16 | `missing-user` | ERROR | Контейнер запускается от пользователя `root` |
-| 3 | `.github/workflows/docker-publish.yml` | 30, 72–74, 104–105, 116 | PartialParsing | WARNING | Потенциальная инъекция команд через `${{ ... }}` в `run` |
+| № | Файл | Строки | Правило | Критичность | CWE | Суть |
+|---|---|---|---|---|---|---|
+| 1 | `.github/workflows/docker-publish.yml` | 22, 49, 64, 79, 90, 97 | `github-actions-mutable-action-tag` | WARNING | CWE-1357, CWE-353 | Использование изменяемых тегов GitHub Actions |
+| 2 | `Dockerfile` | 16 | `missing-user` | ERROR | CWE-250 | Контейнер запускается от пользователя `root` |
+| 3 | `.github/workflows/docker-publish.yml` | 30, 72–74, 104–105, 116 | PartialParsing | WARNING | CWE-78, CWE-94, CWE-1336, CWE-74 | Потенциальная инъекция команд через `${{ ... }}` в `run` |
 
 ### 2.2. Изменяемые теги GitHub Actions
 
